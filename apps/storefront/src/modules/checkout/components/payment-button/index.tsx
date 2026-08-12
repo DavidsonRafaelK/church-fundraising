@@ -1,6 +1,6 @@
 "use client"
 
-import { isManual, isStripeLike } from "@lib/constants"
+import { isManual, isStripeLike, isXendit } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
@@ -38,6 +38,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isManual(paymentSession?.provider_id):
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
+    case isXendit(paymentSession?.provider_id):
+      return (
+        <XenditPaymentButton
+          notReady={notReady}
+          session={paymentSession}
+          data-testid={dataTestId}
+        />
       )
     default:
       return <Button disabled>Pilih metode pembayaran</Button>
@@ -185,6 +193,51 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
       <ErrorMessage
         error={errorMessage}
         data-testid="manual-payment-error-message"
+      />
+    </>
+  )
+}
+
+const XenditPaymentButton = ({
+  session,
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  session?: HttpTypes.StorePaymentSession
+  notReady: boolean
+  "data-testid"?: string
+}) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const invoiceUrl = session?.data?.invoice_url as string | undefined
+
+  const handlePayment = () => {
+    if (!invoiceUrl) {
+      setErrorMessage(
+        "Link pembayaran Xendit belum tersedia. Coba pilih ulang metode pembayaran."
+      )
+      return
+    }
+
+    setSubmitting(true)
+    window.location.href = invoiceUrl
+  }
+
+  return (
+    <>
+      <Button
+        disabled={notReady || !invoiceUrl}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+        data-testid={dataTestId}
+      >
+        Bayar dengan Xendit
+      </Button>
+      <ErrorMessage
+        error={errorMessage}
+        data-testid="xendit-payment-error-message"
       />
     </>
   )

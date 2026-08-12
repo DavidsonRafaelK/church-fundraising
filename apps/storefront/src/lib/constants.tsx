@@ -33,6 +33,10 @@ export const paymentInfoMap: Record<
     title: "Pembayaran Manual",
     icon: <CreditCard />,
   },
+  pp_xendit_xendit: {
+    title: "Xendit (Kartu, VA, QRIS, E-wallet)",
+    icon: <CreditCard />,
+  },
   // Add more payment providers here
 }
 
@@ -48,6 +52,10 @@ export const isPaypal = (providerId?: string) => {
 }
 export const isManual = (providerId?: string) => {
   return providerId?.startsWith("pp_system_default")
+}
+
+export const isXendit = (providerId?: string) => {
+  return providerId?.startsWith("pp_xendit_")
 }
 
 // Add currencies that don't need to be divided by 100

@@ -12,5 +12,23 @@ module.exports = defineConfig({
       jwtSecret: process.env.JWT_SECRET,
       cookieSecret: process.env.COOKIE_SECRET,
     }
-  }
+  },
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/xendit",
+            id: "xendit",
+            options: {
+              secretKey: process.env.XENDIT_SECRET_KEY,
+              callbackToken: process.env.XENDIT_CALLBACK_TOKEN,
+              storefrontUrl: process.env.STOREFRONT_URL,
+            },
+          },
+        ],
+      },
+    },
+  ],
 })
